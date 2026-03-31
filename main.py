@@ -14,23 +14,23 @@ class FauorApp(App):
         spacing = 15
         ) 
        title_label = Label(
-           text='פאעור מרקט',
-           font_size=32,
+           text='Fauor Market',
+           font_size=32
        )
        welcome_label = Label(
-           text='ברוכים הבאים לפאעור מרקט',
-           font_size=20,
+           text='Welcome to Fauor Market!',
+           font_size=20
        )
        products_button = Button(
-           text='צפיה במוצרים',
+           text='View Products',
            size_hint=(1, 0.2)
        )
        cart_button = Button(
-           text = 'הסל שלי ',
+           text = 'My Cart',
            size_hint=(1, 0.2)    
        )
        exit_button = Button(
-              text = 'יציאה',
+              text = 'Exit',
               size_hint=(1, 0.2)
        )
        
@@ -43,9 +43,9 @@ class FauorApp(App):
        main_layout.add_widget(exit_button)
 
        return main_layout
-def close_app(self, instance):
-    App.get_running_app().stop()
+    def close_app(self, instance):
+     App.get_running_app().stop()
     
-if __name__ == '__main__':
+if __name__ == "__main__":
     FauorApp().run()
       
