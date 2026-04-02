@@ -1,11 +1,21 @@
+#   import Files
+import json
+import os
+#*************************************************************#
+#Import from lIbraries
 from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
+#*************************************************************#
 
+#Function to load products from JSON file
+def load_products():
+    file_path = os.path.join(os.path.dirname(__file__), "data", "products.json")
 
-
+    with open(file_path, "r", encoding="utf-8") as file:
+        return json.load(file)
 
 class HomeScreen(Screen):
     def __init__(self, **kwargs):
@@ -69,22 +79,20 @@ class ProductsScreen(Screen):
             text="Products",
             font_size=30
         )
+        layout.add_widget(title_label)
 
-        product_1 = Label(text="Milk - 5.90 NIS")
-        product_2 = Label(text="Bread - 7.50 NIS")
-        product_3 = Label(text="Eggs - 12.00 NIS")
+        products = load_products()
+        
+        for product in products:
+            product_label = Label(text=f"{product['name']} - {product['price']:.2f} NIS")
+            layout.add_widget(product_label)
 
         back_button = Button(
             text="Back to Home",
             size_hint=(1, 0.2)
         )
-
+        
         back_button.bind(on_press=self.go_back)
-
-        layout.add_widget(title_label)
-        layout.add_widget(product_1)
-        layout.add_widget(product_2)
-        layout.add_widget(product_3)
         layout.add_widget(back_button)
 
         self.add_widget(layout)
