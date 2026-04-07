@@ -1,23 +1,33 @@
 [
     {
         "name": "Rice",
-        "price": 10.00
+        "price": 10.00,
+        "category": "Grains",
+        "image": "rice.jpg"
 
     },
     {
         "name": "Sugar",
-        "price": 5.00
+        "price": 5.00,
+        "category": "Grains",
+        "image": "sugar.jpg"
     },
     {
         "name": "Olive Oil",
-        "price": 29.90
+        "price": 29.90,
+        "category": "Oils",
+        "image": "oil.jpg"
     },
     {
         "name": "Milk",
-        "price": 7.90
+        "price": 7.90,
+        "category": "Dairy",
+        "image": "milk.jpg"
     },
     {
         "name": "sandwich",
-        "price": 7.00 
+        "price": 7.00,
+        "category": "Bakery",
+        "image": "sandwich.jpg"    
     }
 ]
