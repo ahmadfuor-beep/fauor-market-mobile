@@ -18,7 +18,6 @@ def load_products():
         return json.load(file)
 # cart to store selected products
 cart = []
-
 class HomeScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -48,7 +47,8 @@ class HomeScreen(Screen):
               text = 'Exit',
               size_hint=(1, 0.2)
        )
-       
+        #
+        cart_button.bind(on_press=self.go_to_cart)
         products_button.bind(on_press=self.go_to_products)
         exit_button.bind(on_press=self.close_app)
 
@@ -66,6 +66,9 @@ class HomeScreen(Screen):
 
     def close_app(self, instance):
         App.get_running_app().stop()
+        #function to switch to cart screen
+    def go_to_cart(self, instance):
+        self.manager.current = "cart"
 
 class ProductsScreen(Screen):
     def __init__(self, **kwargs):
@@ -126,15 +129,77 @@ class ProductsScreen(Screen):
 
     def go_back(self, instance):
         self.manager.current = "home"
+########### class for cart screen ##########
+class CartScreen(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
+        self.layout = BoxLayout(
+            orientation="vertical",
+            padding=20,
+            spacing=10
+        )
 
+        self.title_label = Label(
+            text="My Cart",
+            font_size=30,
+            size_hint=(1, 0.2)
+        )
+
+        self.layout.add_widget(self.title_label)
+
+        self.cart_items_layout = BoxLayout(
+            orientation="vertical"
+        )
+
+        self.layout.add_widget(self.cart_items_layout)
+
+        self.total_label = Label(
+            text="Total: 0 NIS",
+            font_size=20,
+            size_hint=(1, 0.2)
+        )
+
+        self.layout.add_widget(self.total_label)
+
+        back_button = Button(
+            text="Back to Home",
+            size_hint=(1, 0.2)
+        )
+
+        back_button.bind(on_press=self.go_back)
+        self.layout.add_widget(back_button)
+
+        self.add_widget(self.layout)
+
+    def on_enter(self):
+        self.update_cart()
+    #function to update cart items and total price
+    def update_cart(self):
+        self.cart_items_layout.clear_widgets()
+
+        total = 0
+
+        for product in cart:
+            item_label = Label(
+                text=f"{product['name']} - {product['price']} NIS"
+            )
+            self.cart_items_layout.add_widget(item_label)
+
+            total += product["price"]
+
+        self.total_label.text = f"Total: {total} NIS"
+
+    def go_back(self, instance):
+        self.manager.current = "home"
+########### class for running the app ##########
 class FauorApp(App):
     def build(self):
         screen_manager = ScreenManager()
 
         screen_manager.add_widget(HomeScreen(name="home"))
         screen_manager.add_widget(ProductsScreen(name="products"))
-
+        screen_manager.add_widget(CartScreen(name="cart"))
         return screen_manager
 
     
