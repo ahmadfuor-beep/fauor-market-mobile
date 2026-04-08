@@ -17,6 +17,9 @@ Clock.schedule_once(self.go_to_login, 2)
 we can change the user name & the password for login here !
 <if username == "admin" and password == "1234":>
 
+# * * * HOMEֹ_SCREEN CLASS * * * 
+datetime.now().hour --> get the current hour 
+
 
 # * * * PRODUCTS_SCREEN CLASS * * 
 
@@ -47,4 +50,3 @@ Every time the user types:
 # self.search_text.lower() in product["name"].lower()
  it means that no matter if the user search an item
  with a capital or small letter the search is "insensitive" it always works! 
- 

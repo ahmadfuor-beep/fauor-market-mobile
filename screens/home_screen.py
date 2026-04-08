@@ -1,4 +1,4 @@
-
+from datetime import datetime
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -13,10 +13,25 @@ class HomeScreen(Screen):
          orientation='vertical',
         padding =20,
         spacing = 15
-        ) 
+        )
+        
+
+        greeting_box = BoxLayout(
+            size_hint=(1, 0.15),
+            padding=10
+        )
+
+        greeting_label = Label(
+            text=self.get_greeting(),
+            font_size=18
+        )
+
+        greeting_box.add_widget(greeting_label)
+         
         title_label = Label(
            text='Fauor Market',
-           font_size=32
+           font_size=32,
+           bold = True
        )
         welcome_label = Label(
            text='Welcome to Fauor Market!',
@@ -44,7 +59,7 @@ class HomeScreen(Screen):
         cart_button.bind(on_press=self.go_to_cart)
         products_button.bind(on_press=self.go_to_products)
         exit_button.bind(on_press=self.close_app)
-
+        layout.add_widget(greeting_box)
         layout.add_widget(title_label)
         layout.add_widget(welcome_label)
         layout.add_widget(products_button)
@@ -52,6 +67,18 @@ class HomeScreen(Screen):
         layout.add_widget(exit_button)
        
         self.add_widget(layout)
+        
+    def get_greeting(self):
+            # Get the current hour
+            current_hour = datetime.now().hour
+
+            if 5 <= current_hour < 12:
+                return "Good Morning"
+            elif 12 <= current_hour < 18:
+                return "Good Afternoon"
+            else:
+                return "Good Evening"
+        
         #function to switch to products screen
     def go_to_products(self, instance):
         # Switch to the products screen
