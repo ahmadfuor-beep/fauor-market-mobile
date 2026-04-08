@@ -4,6 +4,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
+
 ################################################################
 class HomeScreen(Screen):
     def __init__(self, **kwargs):
@@ -77,7 +78,7 @@ class HomeScreen(Screen):
             elif 12 <= current_hour < 18:
                 return "Good Afternoon"
             else:
-                return "Good Evening"
+                return "Good Evening "
         
         #function to switch to products screen
     def go_to_products(self, instance):

@@ -1,170 +1,268 @@
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.uix.screenmanager import Screen
-from kivy.uix.image import Image
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.textinput import TextInput
-from kivy.metrics import dp
 import os
 
-from services.data_service import load_products
+from kivy.metrics import dp
+from kivy.uix.image import Image
+from kivy.uix.scrollview import ScrollView
 
-################################################
-class ProductsScreen(Screen):
+from kivymd.uix.screen import MDScreen
+from kivymd.uix.card import MDCard
+from kivymd.uix.label import MDLabel
+from kivymd.uix.textfield import MDTextField
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.button import MDButton, MDButtonText
+from kivymd.uix.appbar import (
+    MDTopAppBar,
+    MDTopAppBarTitle,
+    MDTopAppBarLeadingButtonContainer,
+    MDTopAppBarTrailingButtonContainer,
+    MDActionTopAppBarButton,
+)
+
+from services.data_service import load_products
+from ui.theme import APP_COLORS
+
+
+class ProductCard(MDCard):
+    def __init__(self, product, add_callback, **kwargs):
+        super().__init__(**kwargs)
+        self.product = product
+        self.add_callback = add_callback
+
+        self.orientation = "horizontal"
+        self.size_hint = (1, None)
+        self.height = dp(122)
+        self.padding = dp(12)
+        self.spacing = dp(12)
+        self.radius = [22, 22, 22, 22]
+        self.style = "filled"
+        self.md_bg_color = APP_COLORS["surface"]
+        self.line_color = APP_COLORS["border"]
+        self.ripple_behavior = False
+
+        image_path = os.path.join("assets", "images", product["image"])
+        product_image = Image(
+            source=image_path,
+            size_hint=(0.26, 1),
+            allow_stretch=True,
+            keep_ratio=True,
+        )
+
+        info_box = MDBoxLayout(
+            orientation="vertical",
+            size_hint=(0.50, 1),
+            spacing=dp(4),
+        )
+
+        name_label = MDLabel(
+            text=product["name"],
+            theme_text_color="Custom",
+            text_color=APP_COLORS["text"],
+            font_style="Title",
+            role="medium",
+            bold=True,
+        )
+
+        price_label = MDLabel(
+            text=f"{product['price']} NIS",
+            theme_text_color="Custom",
+            text_color=APP_COLORS["muted"],
+            font_style="Body",
+            role="large",
+        )
+
+        category_label = MDLabel(
+            text=product["category"],
+            theme_text_color="Custom",
+            text_color=APP_COLORS["accent"],
+            font_style="Label",
+            role="large",
+        )
+
+        info_box.add_widget(name_label)
+        info_box.add_widget(price_label)
+        info_box.add_widget(category_label)
+
+        button_box = MDBoxLayout(
+            orientation="vertical",
+            size_hint=(0.24, 1),
+            adaptive_height=False,
+        )
+
+        spacer_top = MDBoxLayout()
+        spacer_mid = MDBoxLayout(size_hint=(1, None), height=dp(8))
+        spacer_bottom = MDBoxLayout()
+
+        add_button = MDButton(
+            MDButtonText(text="Add"),
+            style="filled",
+            size_hint=(1, None),
+            height=dp(40),
+            radius=[18, 18, 18, 18],
+            md_bg_color=APP_COLORS["accent"],
+            on_release=lambda x: self.add_callback(self.product),
+        )
+
+        button_box.add_widget(spacer_top)
+        button_box.add_widget(add_button)
+        button_box.add_widget(spacer_mid)
+        button_box.add_widget(spacer_bottom)
+
+        self.add_widget(product_image)
+        self.add_widget(info_box)
+        self.add_widget(button_box)
+
+
+class ProductsScreen(MDScreen):
     def __init__(self, cart, **kwargs):
         super().__init__(**kwargs)
         self.cart = cart
         self.current_category = "All"
         self.search_text = ""
 
-        self.main_layout = BoxLayout(
+        self.md_bg_color = APP_COLORS["background"]
+
+        self.root_box = MDBoxLayout(
             orientation="vertical",
-            padding=20,
-            spacing=10
+            spacing=dp(10),
         )
 
-        self.add_widget(self.main_layout)
-        self.load_products_ui("All")
+        self.add_widget(self.root_box)
+        self.build_ui()
 
-    def load_products_ui(self, category="All"):
-        self.current_category = category
-        self.main_layout.clear_widgets()
+    def build_ui(self):
+        self.root_box.clear_widgets()
 
-        title_label = Label(
-            text="Products",
-            font_size=30,
-            size_hint=(1, None),
-            height=dp(50)
+        top_bar = MDTopAppBar(
+            type="small",
+            md_bg_color=APP_COLORS["surface_2"],
         )
-        self.main_layout.add_widget(title_label)
-
-        self.search_input = TextInput(
-            hint_text="Search product...",
-            multiline=False,
-            size_hint=(1, None),
-            height=dp(45),
-            text=self.search_text
-        )
-        self.search_input.bind(text=self.on_search_text)
-        self.main_layout.add_widget(self.search_input)
-
-        categories_layout = BoxLayout(
-            size_hint=(1, None),
-            height=dp(50),
-            spacing=5
-        )
-
-        categories = ["All", "Dairy", "Bakery", "Grains", "Oils"]
-
-        for cat in categories:
-            btn = Button(
-                text=cat,
-                background_normal="",
-                background_color=(0.2, 0.6, 0.2, 1)
+        top_bar.add_widget(
+            MDTopAppBarLeadingButtonContainer(
+                MDActionTopAppBarButton(
+                    icon="arrow-left",
+                    on_release=self.go_back
+                )
             )
-            btn.bind(on_press=lambda instance, c=cat: self.load_products_ui(c))
-            categories_layout.add_widget(btn)
-
-        self.main_layout.add_widget(categories_layout)
-
-        scroll_view = ScrollView(size_hint=(1, 1))
-
-        products_layout = BoxLayout(
-            orientation="vertical",
-            spacing=10,
-            size_hint_y=None
         )
-        products_layout.bind(minimum_height=products_layout.setter("height"))
+        top_bar.add_widget(
+            MDTopAppBarTitle(
+                text="Products",
+                theme_text_color="Custom",
+                text_color=APP_COLORS["text"],
+            )
+        )
+        top_bar.add_widget(
+            MDTopAppBarTrailingButtonContainer(
+                MDActionTopAppBarButton(icon="cart-outline")
+            )
+        )
+        self.root_box.add_widget(top_bar)
 
+        content_box = MDBoxLayout(
+            orientation="vertical",
+            padding=[dp(14), dp(8), dp(14), dp(12)],
+            spacing=dp(10),
+        )
+
+        self.search_field = MDTextField(
+            hint_text="Search product...",
+            text=self.search_text,
+            mode="outlined",
+            size_hint=(1, None),
+            height=dp(56),
+        )
+        self.search_field.bind(text=self.on_search_text)
+        content_box.add_widget(self.search_field)
+
+        categories_box = MDBoxLayout(
+            orientation="horizontal",
+            adaptive_height=True,
+            spacing=dp(8),
+        )
+
+        for category in ["All", "Dairy", "Bakery", "Grains", "Oils"]:
+            is_selected = category == self.current_category
+
+            btn = MDButton(
+                MDButtonText(text=category),
+                style="filled" if is_selected else "outlined",
+                size_hint=(None, None),
+                height=dp(38),
+                width=dp(92),
+                radius=[18, 18, 18, 18],
+                md_bg_color=APP_COLORS["accent_soft"] if is_selected else APP_COLORS["surface"],
+                line_color=APP_COLORS["border"],
+                on_release=lambda x, c=category: self.change_category(c),
+            )
+            categories_box.add_widget(btn)
+
+        content_box.add_widget(categories_box)
+
+        scroll = ScrollView(size_hint=(1, 1))
+
+        products_list = MDBoxLayout(
+            orientation="vertical",
+            spacing=dp(12),
+            padding=[0, dp(6), 0, dp(6)],
+            size_hint_y=None,
+        )
+        products_list.bind(minimum_height=products_list.setter("height"))
+
+        filtered_products = self.get_filtered_products()
+
+        for product in filtered_products:
+            products_list.add_widget(
+                ProductCard(
+                    product=product,
+                    add_callback=self.add_to_cart
+                )
+            )
+
+        if not filtered_products:
+            products_list.add_widget(
+                MDLabel(
+                    text="No products found",
+                    halign="center",
+                    theme_text_color="Custom",
+                    text_color=APP_COLORS["muted"],
+                    size_hint=(1, None),
+                    height=dp(60),
+                )
+            )
+
+        scroll.add_widget(products_list)
+        content_box.add_widget(scroll)
+
+        self.root_box.add_widget(content_box)
+
+    def get_filtered_products(self):
         products = load_products()
+        result = []
 
         for product in products:
-            if category != "All" and product["category"] != category:
+            if self.current_category != "All" and product["category"] != self.current_category:
                 continue
 
-            if self.search_text:
+            if self.search_text.strip():
                 if self.search_text.lower() not in product["name"].lower():
                     continue
 
-            product_box = BoxLayout(
-                size_hint=(1, None),
-                height=dp(120),
-                spacing=10,
-                padding=10
-            )
+            result.append(product)
 
-            image_path = os.path.join("assets", "images", product["image"])
+        return result
 
-            product_image = Image(
-                source=image_path,
-                size_hint=(0.25, 1)
-            )
+    def change_category(self, category):
+        self.current_category = category
+        self.build_ui()
 
-            product_info = BoxLayout(
-                orientation="vertical",
-                size_hint=(0.5, 1),
-                spacing=5
-            )
-
-            name_label = Label(
-                text=product["name"],
-                font_size=20
-            )
-
-            price_label = Label(
-                text=f"{product['price']} NIS",
-                font_size=16
-            )
-
-            category_label = Label(
-                text=product["category"],
-                font_size=14
-            )
-
-            product_info.add_widget(name_label)
-            product_info.add_widget(price_label)
-            product_info.add_widget(category_label)
-
-            add_button = Button(
-                text="Add",
-                size_hint=(0.25, 1),
-                background_normal="",
-                background_color=(0.1, 0.5, 0.8, 1)
-            )
-
-            add_button.bind(
-                on_press=lambda instance, p=product: self.add_to_cart(p)
-            )
-
-            product_box.add_widget(product_image)
-            product_box.add_widget(product_info)
-            product_box.add_widget(add_button)
-
-            products_layout.add_widget(product_box)
-
-        scroll_view.add_widget(products_layout)
-        self.main_layout.add_widget(scroll_view)
-
-        back_button = Button(
-            text="Back to Home",
-            size_hint=(1, None),
-            height=dp(50),
-            background_normal="",
-            background_color=(0.8, 0.2, 0.2, 1)
-        )
-
-        back_button.bind(on_press=self.go_back)
-        self.main_layout.add_widget(back_button)
-    
     def on_search_text(self, instance, value):
         self.search_text = value
-        self.load_products_ui(self.current_category)
+        self.build_ui()
 
     def add_to_cart(self, product):
         self.cart.append(product)
         print(f"Added to cart: {product['name']}")
         print(self.cart)
 
-    def go_back(self, instance):
+    def go_back(self, *args):
         self.manager.current = "home"
