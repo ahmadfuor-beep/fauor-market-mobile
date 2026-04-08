@@ -145,31 +145,50 @@ class CartScreen(MDScreen):
             height=dp(48),
             spacing=dp(10)
         )
+        buttons_row = MDBoxLayout(
+            orientation="horizontal",
+            size_hint=(1, None),
+            height=dp(48),
+            spacing=dp(10)
+        )
 
         clear_button = MDButton(
             MDButtonText(text="Clear Cart"),
             style="outlined",
-            size_hint=(0.5, 1),
+            size_hint=(0.33, 1),
             radius=[22, 22, 22, 22],
             line_color=APP_COLORS["border"],
             on_release=self.clear_cart
         )
 
-        back_button = MDButton(
-            MDButtonText(text="Back Home"),
+        checkout_button = MDButton(
+            MDButtonText(text="Checkout"),
             style="filled",
-            size_hint=(0.5, 1),
+            size_hint=(0.34, 1),
             radius=[22, 22, 22, 22],
             md_bg_color=APP_COLORS["accent"],
+            on_release=self.go_to_checkout
+        )
+
+        back_button = MDButton(
+            MDButtonText(text="Back Home"),
+            style="outlined",
+            size_hint=(0.33, 1),
+            radius=[22, 22, 22, 22],
+            line_color=APP_COLORS["border"],
             on_release=self.go_back
         )
 
         buttons_row.add_widget(clear_button)
+        buttons_row.add_widget(checkout_button)
         buttons_row.add_widget(back_button)
 
         content.add_widget(buttons_row)
         self.root_box.add_widget(content)
-
+        
+    def go_to_checkout(self, *args):
+        self.manager.current = "checkout"
+        
     def on_enter(self):
         self.update_cart()
 

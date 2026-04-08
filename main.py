@@ -7,7 +7,7 @@ from screens.home_screen import HomeScreen
 from screens.products_screen import ProductsScreen
 from screens.cart_screen import CartScreen
 from ui.theme import APP_COLORS
-
+from screens.checkout_screen import CheckoutScreen
 
 class FauorApp(MDApp):
     def build(self):
@@ -22,6 +22,7 @@ class FauorApp(MDApp):
         sm.add_widget(HomeScreen(name="home"))
         sm.add_widget(ProductsScreen(cart=cart, name="products"))
         sm.add_widget(CartScreen(cart=cart, name="cart"))
+        sm.add_widget(CheckoutScreen(cart=cart, name="checkout"))
         sm.current = "splash"
         return sm
 
