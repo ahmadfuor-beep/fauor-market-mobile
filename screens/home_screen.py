@@ -24,15 +24,21 @@ class HomeScreen(Screen):
        )
         products_button = Button(
            text='View Products',
-           size_hint=(1, 0.2)
+           size_hint=(1, 0.2),
+           background_normal="",
+           background_color=(0.1, 0.6, 0.8, 1)
        )
         cart_button = Button(
            text = 'My Cart',
-           size_hint=(1, 0.2)    
+           size_hint=(1, 0.2),
+           background_normal="",
+           background_color=(0.2, 0.7, 0.3, 1)   
        )
         exit_button = Button(
               text = 'Exit',
-              size_hint=(1, 0.2)
+              size_hint=(1, 0.2),
+              background_normal="",
+              background_color=(0.8, 0.2, 0.2, 1)
        )
         #
         cart_button.bind(on_press=self.go_to_cart)
