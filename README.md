@@ -37,3 +37,14 @@ height=dp(120)
 # buttons color:
 background_normal=""
 background_color=(0.1, 0.5, 0.8, 1)
+
+# def on_search_text(self, instance, value):
+Every time the user types:
+- The text is saved in "self.search_text"
+- The screen is rebuilt
+- Only products whose names contain the text remain
+
+# self.search_text.lower() in product["name"].lower()
+ it means that no matter if the user search an item
+ with a capital or small letter the search is "insensitive" it always works! 
+ 

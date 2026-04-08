@@ -4,6 +4,7 @@ from kivy.uix.button import Button
 from kivy.uix.screenmanager import Screen
 from kivy.uix.image import Image
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.textinput import TextInput
 from kivy.metrics import dp
 import os
 
@@ -14,6 +15,8 @@ class ProductsScreen(Screen):
     def __init__(self, cart, **kwargs):
         super().__init__(**kwargs)
         self.cart = cart
+        self.current_category = "All"
+        self.search_text = ""
 
         self.main_layout = BoxLayout(
             orientation="vertical",
@@ -25,6 +28,7 @@ class ProductsScreen(Screen):
         self.load_products_ui("All")
 
     def load_products_ui(self, category="All"):
+        self.current_category = category
         self.main_layout.clear_widgets()
 
         title_label = Label(
@@ -34,6 +38,16 @@ class ProductsScreen(Screen):
             height=dp(50)
         )
         self.main_layout.add_widget(title_label)
+
+        self.search_input = TextInput(
+            hint_text="Search product...",
+            multiline=False,
+            size_hint=(1, None),
+            height=dp(45),
+            text=self.search_text
+        )
+        self.search_input.bind(text=self.on_search_text)
+        self.main_layout.add_widget(self.search_input)
 
         categories_layout = BoxLayout(
             size_hint=(1, None),
@@ -68,6 +82,10 @@ class ProductsScreen(Screen):
         for product in products:
             if category != "All" and product["category"] != category:
                 continue
+
+            if self.search_text:
+                if self.search_text.lower() not in product["name"].lower():
+                    continue
 
             product_box = BoxLayout(
                 size_hint=(1, None),
@@ -124,7 +142,7 @@ class ProductsScreen(Screen):
             product_box.add_widget(add_button)
 
             products_layout.add_widget(product_box)
-        # add products layout to scroll view and then to main layout
+
         scroll_view.add_widget(products_layout)
         self.main_layout.add_widget(scroll_view)
 
@@ -138,6 +156,10 @@ class ProductsScreen(Screen):
 
         back_button.bind(on_press=self.go_back)
         self.main_layout.add_widget(back_button)
+    
+    def on_search_text(self, instance, value):
+        self.search_text = value
+        self.load_products_ui(self.current_category)
 
     def add_to_cart(self, product):
         self.cart.append(product)
