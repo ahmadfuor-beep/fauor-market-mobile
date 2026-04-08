@@ -5,6 +5,19 @@ A mobile supermarket app project built with Python.
 ## Project Goal
 Build a supermarket mobile app for Fauor Market while improving Python and GitHub skills.
 
+# * * * SPLASH-SCREEN CLASS * * 
+
+Clock.schedule_once(self.go_to_login, 2)
+---> this means wait 2 seconds and then move the home screen 
+
+
+# * * * LOGIN SCREEN CLASS * * *
+* user name : admin
+* password : 1234 
+we can change the user name & the password for login here !
+<if username == "admin" and password == "1234":>
+
+
 # * * * PRODUCTS_SCREEN CLASS * * 
 
 # Product information distribution
