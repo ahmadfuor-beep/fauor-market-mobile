@@ -1,92 +1,141 @@
 from datetime import datetime
-from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.uix.screenmanager import Screen
 
-################################################################
-class HomeScreen(Screen):
+from kivymd.uix.screen import MDScreen
+from kivymd.uix.card import MDCard
+from kivymd.uix.label import MDLabel
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.button import MDButton, MDButtonText
+from ui.theme import APP_COLORS
+from kivymd.app import MDApp
+from kivy.metrics import dp
+
+
+class HomeScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        layout = BoxLayout(
-         orientation='vertical',
-        padding =20,
-        spacing = 15
-        )
-        
+        self.md_bg_color = APP_COLORS["background"]
 
-        greeting_box = BoxLayout(
-            size_hint=(1, 0.15),
-            padding=10
+        root = MDBoxLayout(
+            orientation="vertical",
+            padding=dp(20),
+            spacing=dp(18)
         )
 
-        greeting_label = Label(
+        top_row = MDBoxLayout(
+            orientation="horizontal",
+            size_hint=(1, None),
+            height=dp(60)
+        )
+
+        top_row.add_widget(MDBoxLayout())
+
+        greeting_card = MDCard(
+            size_hint=(0.7, 1),
+            radius=[24, 24, 24, 24],
+            style="filled",
+            md_bg_color=APP_COLORS["surface"],
+            line_color=APP_COLORS["border"],
+            padding=dp(12)
+        )
+
+        greeting_label = MDLabel(
             text=self.get_greeting(),
-            font_size=18
+            halign="center",
+            theme_text_color="Custom",
+            text_color=APP_COLORS["text"],
+            font_style="Title",
+            role="medium",
+            bold=True
         )
 
-        greeting_box.add_widget(greeting_label)
-         
-        title_label = Label(
-           text='Fauor Market',
-           font_size=32,
-           bold = True
-       )
-        welcome_label = Label(
-           text='Welcome to Fauor Market!',
-           font_size=20
-       )
-        products_button = Button(
-           text='View Products',
-           size_hint=(1, 0.2),
-           background_normal="",
-           background_color=(0.1, 0.6, 0.8, 1)
-       )
-        cart_button = Button(
-           text = 'My Cart',
-           size_hint=(1, 0.2),
-           background_normal="",
-           background_color=(0.2, 0.7, 0.3, 1)   
-       )
-        exit_button = Button(
-              text = 'Exit',
-              size_hint=(1, 0.2),
-              background_normal="",
-              background_color=(0.8, 0.2, 0.2, 1)
-       )
-        #
-        cart_button.bind(on_press=self.go_to_cart)
-        products_button.bind(on_press=self.go_to_products)
-        exit_button.bind(on_press=self.close_app)
-        layout.add_widget(greeting_box)
-        layout.add_widget(title_label)
-        layout.add_widget(welcome_label)
-        layout.add_widget(products_button)
-        layout.add_widget(cart_button)
-        layout.add_widget(exit_button)
-       
-        self.add_widget(layout)
-        
-    def get_greeting(self):
-            # Get the current hour
-            current_hour = datetime.now().hour
+        greeting_card.add_widget(greeting_label)
 
-            if 5 <= current_hour < 12:
-                return "Good Morning"
-            elif 12 <= current_hour < 18:
-                return "Good Afternoon"
-            else:
-                return "Good Evening "
-        
-        #function to switch to products screen
-    def go_to_products(self, instance):
-        # Switch to the products screen
+        top_row.add_widget(greeting_card)
+        top_row.add_widget(MDBoxLayout())
+
+        title_label = MDLabel(
+            text="Fauor Market",
+            halign="center",
+            theme_text_color="Custom",
+            text_color=APP_COLORS["text"],
+            font_style="Display",
+            role="small",
+            bold=True
+        )
+
+        subtitle_label = MDLabel(
+            text="Welcome to our supermarket app",
+            halign="center",
+            theme_text_color="Custom",
+            text_color=APP_COLORS["muted"],
+            font_style="Body",
+            role="large"
+        )
+
+        menu_card = MDCard(
+            orientation="vertical",
+            radius=[28, 28, 28, 28],
+            style="filled",
+            md_bg_color=APP_COLORS["surface"],
+            line_color=APP_COLORS["border"],
+            padding=dp(20),
+            spacing=dp(16)
+        )
+
+        products_button = MDButton(
+            MDButtonText(text="View Products"),
+            style="filled",
+            size_hint=(1, None),
+            height=dp(48),
+            radius=[22, 22, 22, 22],
+            md_bg_color=APP_COLORS["accent"],
+            on_release=self.go_to_products
+        )
+
+        cart_button = MDButton(
+            MDButtonText(text="My Cart"),
+            style="outlined",
+            size_hint=(1, None),
+            height=dp(48),
+            radius=[22, 22, 22, 22],
+            line_color=APP_COLORS["border"],
+            on_release=self.go_to_cart
+        )
+
+        exit_button = MDButton(
+            MDButtonText(text="Close App"),
+            style="text",
+            size_hint=(1, None),
+            height=dp(42),
+            on_release=self.close_app
+        )
+
+        menu_card.add_widget(products_button)
+        menu_card.add_widget(cart_button)
+        menu_card.add_widget(exit_button)
+
+        root.add_widget(top_row)
+        root.add_widget(title_label)
+        root.add_widget(subtitle_label)
+        root.add_widget(menu_card)
+
+        self.add_widget(root)
+
+    def get_greeting(self):
+        current_hour = datetime.now().hour
+
+        if 5 <= current_hour < 12:
+            return "Good Morning"
+        elif 12 <= current_hour < 18:
+            return "Good Afternoon"
+        return "Good Evening"
+
+    def go_to_products(self, *args):
         self.manager.current = "products"
 
-    def close_app(self, instance):
-        App.get_running_app().stop()
-        #function to switch to cart screen
-    def go_to_cart(self, instance):
+    def go_to_cart(self, *args):
         self.manager.current = "cart"
+
+    def close_app(self, *args):
+        MDApp.get_running_app().stop()

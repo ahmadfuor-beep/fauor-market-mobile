@@ -3,7 +3,7 @@ import os
 from kivy.metrics import dp
 from kivy.uix.image import Image
 from kivy.uix.scrollview import ScrollView
-
+from kivy.uix.gridlayout import GridLayout
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.card import MDCard
 from kivymd.uix.label import MDLabel
@@ -21,95 +21,110 @@ from kivymd.uix.appbar import (
 from services.data_service import load_products
 from ui.theme import APP_COLORS
 
-
 class ProductCard(MDCard):
     def __init__(self, product, add_callback, **kwargs):
         super().__init__(**kwargs)
         self.product = product
         self.add_callback = add_callback
 
-        self.orientation = "horizontal"
+        self.orientation = "vertical"
         self.size_hint = (1, None)
-        self.height = dp(122)
+        self.height = dp(300)
         self.padding = dp(12)
-        self.spacing = dp(12)
-        self.radius = [22, 22, 22, 22]
+        self.spacing = dp(8)
+        self.radius = [24, 24, 24, 24]
         self.style = "filled"
         self.md_bg_color = APP_COLORS["surface"]
         self.line_color = APP_COLORS["border"]
         self.ripple_behavior = False
 
         image_path = os.path.join("assets", "images", product["image"])
-        product_image = Image(
-            source=image_path,
-            size_hint=(0.26, 1),
-            allow_stretch=True,
-            keep_ratio=True,
+
+        image_box = MDBoxLayout(
+            orientation="horizontal",
+            size_hint=(1, None),
+            height=dp(110),
+            padding=[dp(8), dp(8), dp(8), dp(0)]
         )
 
-        info_box = MDBoxLayout(
-            orientation="vertical",
-            size_hint=(0.50, 1),
-            spacing=dp(4),
+        left_space = MDBoxLayout()
+        right_space = MDBoxLayout()
+
+        product_image = Image(
+            source=image_path,
+            size_hint=(None, None),
+            size=(dp(100), dp(100)),
+            pos_hint={"center_y": 0.5}
         )
+
+        image_box.add_widget(left_space)
+        image_box.add_widget(product_image)
+        image_box.add_widget(right_space)
 
         name_label = MDLabel(
             text=product["name"],
+            halign="center",
             theme_text_color="Custom",
             text_color=APP_COLORS["text"],
             font_style="Title",
             role="medium",
             bold=True,
+            size_hint=(1, None),
+            height=dp(30)
         )
 
         price_label = MDLabel(
             text=f"{product['price']} NIS",
+            halign="center",
             theme_text_color="Custom",
             text_color=APP_COLORS["muted"],
             font_style="Body",
             role="large",
+            size_hint=(1, None),
+            height=dp(28)
         )
 
         category_label = MDLabel(
             text=product["category"],
+            halign="center",
             theme_text_color="Custom",
             text_color=APP_COLORS["accent"],
             font_style="Label",
             role="large",
+            size_hint=(1, None),
+            height=dp(24)
         )
 
-        info_box.add_widget(name_label)
-        info_box.add_widget(price_label)
-        info_box.add_widget(category_label)
-
-        button_box = MDBoxLayout(
-            orientation="vertical",
-            size_hint=(0.24, 1),
-            adaptive_height=False,
+        button_row = MDBoxLayout(
+            orientation="horizontal",
+            size_hint=(1, None),
+            height=dp(50),
+            padding=[0, dp(4), 0, 0]
         )
 
-        spacer_top = MDBoxLayout()
-        spacer_mid = MDBoxLayout(size_hint=(1, None), height=dp(8))
-        spacer_bottom = MDBoxLayout()
+        left_space = MDBoxLayout()
+        right_space = MDBoxLayout()
 
         add_button = MDButton(
             MDButtonText(text="Add"),
             style="filled",
-            size_hint=(1, None),
-            height=dp(40),
-            radius=[18, 18, 18, 18],
+            size_hint=(None, None),
+            width=dp(82),
+            height=dp(38),
+            radius=[19, 19, 19, 19],
             md_bg_color=APP_COLORS["accent"],
             on_release=lambda x: self.add_callback(self.product),
         )
 
-        button_box.add_widget(spacer_top)
-        button_box.add_widget(add_button)
-        button_box.add_widget(spacer_mid)
-        button_box.add_widget(spacer_bottom)
+        button_row.add_widget(left_space)
+        button_row.add_widget(add_button)
+        button_row.add_widget(right_space)
 
-        self.add_widget(product_image)
-        self.add_widget(info_box)
-        self.add_widget(button_box)
+        self.add_widget(image_box)
+        self.add_widget(name_label)
+        self.add_widget(price_label)
+        self.add_widget(category_label)
+        self.add_widget(button_row)
 
 
 class ProductsScreen(MDScreen):
@@ -200,11 +215,11 @@ class ProductsScreen(MDScreen):
 
         scroll = ScrollView(size_hint=(1, 1))
 
-        products_list = MDBoxLayout(
-            orientation="vertical",
+        products_list = GridLayout(
+            cols=2,
             spacing=dp(12),
             padding=[0, dp(6), 0, dp(6)],
-            size_hint_y=None,
+            size_hint_y=None
         )
         products_list.bind(minimum_height=products_list.setter("height"))
 

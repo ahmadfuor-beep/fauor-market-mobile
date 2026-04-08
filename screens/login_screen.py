@@ -1,62 +1,108 @@
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.uix.textinput import TextInput
-from kivy.uix.screenmanager import Screen
+from kivymd.uix.screen import MDScreen
+from kivymd.uix.card import MDCard
+from kivymd.uix.label import MDLabel
+from kivymd.uix.textfield import MDTextField
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.button import MDButton, MDButtonText
+from ui.theme import APP_COLORS
+from kivy.metrics import dp
 
 
-class LoginScreen(Screen):
+class LoginScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        layout = BoxLayout(
+        self.md_bg_color = APP_COLORS["background"]
+
+        root = MDBoxLayout(
             orientation="vertical",
-            padding=20,
-            spacing=15
+            padding=dp(24),
+            spacing=dp(18)
         )
 
-        title_label = Label(
+        root.add_widget(MDBoxLayout())
+
+        login_card = MDCard(
+            orientation="vertical",
+            size_hint=(1, None),
+            height=dp(420),
+            padding=dp(22),
+            spacing=dp(18),
+            radius=[28, 28, 28, 28],
+            style="filled",
+            md_bg_color=APP_COLORS["surface"],
+            line_color=APP_COLORS["border"]
+        )
+
+        title = MDLabel(
             text="Login",
-            font_size=32
+            halign="center",
+            theme_text_color="Custom",
+            text_color=APP_COLORS["text"],
+            font_style="Headline",
+            role="small",
+            bold=True
         )
 
-        self.username_input = TextInput(
-            hint_text="Enter username",
-            multiline=False
+        subtitle = MDLabel(
+            text="Enter your account details",
+            halign="center",
+            theme_text_color="Custom",
+            text_color=APP_COLORS["muted"],
+            font_style="Body",
+            role="large"
         )
 
-        self.password_input = TextInput(
-            hint_text="Enter password",
-            multiline=False,
-            password=True
+        self.username_input = MDTextField(
+            hint_text="Username",
+            mode="outlined",
+            size_hint=(1, None),
+            height=dp(56)
         )
 
-        login_button = Button(
-            text="Login",
-            size_hint=(1, 0.2),
-            background_normal="",
-            background_color=(0.1, 0.6, 0.8, 1)
+        self.password_input = MDTextField(
+            hint_text="Password",
+            mode="outlined",
+            password=True,
+            size_hint=(1, None),
+            height=dp(56)
         )
 
-        self.message_label = Label(
+        login_button = MDButton(
+            MDButtonText(text="Login"),
+            style="filled",
+            size_hint=(1, None),
+            height=dp(48),
+            radius=[22, 22, 22, 22],
+            md_bg_color=APP_COLORS["accent"],
+            on_release=self.check_login
+        )
+
+        self.message_label = MDLabel(
             text="",
-            font_size=18
+            halign="center",
+            theme_text_color="Custom",
+            text_color=APP_COLORS["accent"],
+            font_style="Body",
+            role="medium"
         )
 
-        login_button.bind(on_press=self.check_login)
+        login_card.add_widget(title)
+        login_card.add_widget(subtitle)
+        login_card.add_widget(self.username_input)
+        login_card.add_widget(self.password_input)
+        login_card.add_widget(login_button)
+        login_card.add_widget(self.message_label)
 
-        layout.add_widget(title_label)
-        layout.add_widget(self.username_input)
-        layout.add_widget(self.password_input)
-        layout.add_widget(login_button)
-        layout.add_widget(self.message_label)
+        root.add_widget(login_card)
+        root.add_widget(MDBoxLayout())
 
-        self.add_widget(layout)
+        self.add_widget(root)
 
-    def check_login(self, instance):
+    def check_login(self, *args):
         username = self.username_input.text
         password = self.password_input.text
-        # here we can chnage the "username" and "password" to any value we want to test the login functionality
+
         if username == "admin" and password == "1234":
             self.message_label.text = "Login successful"
             self.manager.current = "home"
