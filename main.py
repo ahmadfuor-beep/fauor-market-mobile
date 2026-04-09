@@ -8,9 +8,12 @@ from screens.products_screen import ProductsScreen
 from screens.cart_screen import CartScreen
 from ui.theme import APP_COLORS
 from screens.checkout_screen import CheckoutScreen
-
+from services.db_service import create_tables, insert_products
+from services.data_service import load_products
 class FauorApp(MDApp):
     def build(self):
+        create_tables()
+        insert_products(load_products())
         self.theme_cls.theme_style = "Light"
         self.theme_cls.primary_palette = "Brown"
 

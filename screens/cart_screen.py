@@ -14,7 +14,7 @@ from kivymd.uix.appbar import (
 )
 
 from ui.theme import APP_COLORS
-
+from services.db_service import get_cart_db, clear_cart_db, remove_from_cart_db
 
 class CartItemCard(MDCard):
     def __init__(self, product, remove_callback, **kwargs):
@@ -195,7 +195,7 @@ class CartScreen(MDScreen):
     def update_cart(self):
         self.items_box.clear_widgets()
         total = 0
-
+        self.cart = get_cart_db()
         for product in self.cart:
             self.items_box.add_widget(
                 CartItemCard(product, self.remove_item)
@@ -217,10 +217,11 @@ class CartScreen(MDScreen):
         self.total_label.text = f"Total: {total} NIS"
 
     def remove_item(self, product):
-        self.cart.remove(product)
+        remove_from_cart_db(product["id"])
         self.update_cart()
 
     def clear_cart(self, *args):
+        clear_cart_db()
         self.cart.clear()
         self.update_cart()
 

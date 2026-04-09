@@ -1,5 +1,5 @@
 import os
-
+from kivymd.uix.snackbar import MDSnackbar, MDSnackbarText
 from kivy.metrics import dp
 from kivy.uix.image import Image
 from kivy.uix.scrollview import ScrollView
@@ -17,8 +17,7 @@ from kivymd.uix.appbar import (
     MDTopAppBarTrailingButtonContainer,
     MDActionTopAppBarButton,
 )
-
-from services.data_service import load_products
+from services.db_service import get_products, add_to_cart_db
 from ui.theme import APP_COLORS
 
 class ProductCard(MDCard):
@@ -251,7 +250,7 @@ class ProductsScreen(MDScreen):
         self.root_box.add_widget(content_box)
 
     def get_filtered_products(self):
-        products = load_products()
+        products = get_products()
         result = []
 
         for product in products:
@@ -276,6 +275,14 @@ class ProductsScreen(MDScreen):
 
     def add_to_cart(self, product):
         self.cart.append(product)
+        add_to_cart_db(product)
+        snackbar = MDSnackbar(
+            MDSnackbarText(
+                text=f"{product['name']} added to cart"
+            )
+        )
+        snackbar.open()
+
         print(f"Added to cart: {product['name']}")
         print(self.cart)
 
