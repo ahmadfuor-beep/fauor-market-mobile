@@ -1,5 +1,5 @@
 from kivy.metrics import dp
-
+from kivy.animation import Animation
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.card import MDCard
 from kivymd.uix.label import MDLabel
@@ -97,7 +97,7 @@ class CheckoutScreen(MDScreen):
         )
         content.add_widget(self.total_label)
 
-        confirm_button = MDButton(
+        self.confirm_button = MDButton(
             MDButtonText(text="Confirm Order"),
             style="filled",
             size_hint=(1, None),
@@ -117,7 +117,7 @@ class CheckoutScreen(MDScreen):
             on_release=self.go_back
         )
 
-        content.add_widget(confirm_button)
+        content.add_widget(self.confirm_button)
         content.add_widget(back_button)
 
         self.root_box.add_widget(content)
@@ -170,7 +170,9 @@ class CheckoutScreen(MDScreen):
 
         self.cart.clear()
         self.update_summary()
-
+        # change the confirm button to green after successful order
+        self.confirm_button.md_bg_color = (0.2, 0.7, 0.3, 1)
+        
         snackbar = MDSnackbar(
             MDSnackbarText(text="Order confirmed successfully"),
             y=dp(24),
@@ -178,6 +180,11 @@ class CheckoutScreen(MDScreen):
             size_hint_x=0.75
         )
         snackbar.open()
-
+        # The card will disappear after confrimation
+        anim = Animation(opacity=0, duration=0.3)
+        anim.start(self.summary_card)
+        
+        
+        
     def go_back(self, *args):
         self.manager.current = "cart"

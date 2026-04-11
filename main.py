@@ -1,6 +1,6 @@
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager
-
+from kivy.uix.screenmanager import FadeTransition
 from screens.splash_screen import SplashScreen
 from screens.login_screen import LoginScreen
 from screens.home_screen import HomeScreen
@@ -18,8 +18,10 @@ class FauorApp(MDApp):
         self.theme_cls.primary_palette = "Brown"
 
         cart = []
-
-        sm = ScreenManager()
+        # setting up the screen manager with all screens
+        # using fade transition for smooth screen changes
+        sm = ScreenManager(transition=FadeTransition(duration=0.3))
+        
         sm.add_widget(SplashScreen(name="splash"))
         sm.add_widget(LoginScreen(name="login"))
         sm.add_widget(HomeScreen(name="home"))

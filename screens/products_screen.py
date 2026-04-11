@@ -1,4 +1,5 @@
 import os
+from kivy.animation import Animation
 from kivymd.uix.snackbar import MDSnackbar, MDSnackbarText
 from kivy.metrics import dp
 from kivy.uix.image import Image
@@ -112,7 +113,7 @@ class ProductCard(MDCard):
             height=dp(38),
             radius=[19, 19, 19, 19],
             md_bg_color=APP_COLORS["accent"],
-            on_release=lambda x: self.add_callback(self.product),
+            on_release=lambda x: self.animate_and_add()
         )
 
         button_row.add_widget(left_space)
@@ -124,7 +125,19 @@ class ProductCard(MDCard):
         self.add_widget(price_label)
         self.add_widget(category_label)
         self.add_widget(button_row)
+        # start with invisible card for animation effect
+        self.opacity = 0
 
+        Animation(opacity=1, duration=0.4).start(self)
+        
+    def animate_and_add(self):
+        anim = Animation(opacity=0.5, duration=0.1) + Animation(opacity=1, duration=0.1)
+        anim.start(self)
+
+        self.add_callback(self.product)    
+    
+
+    
 
 class ProductsScreen(MDScreen):
     def __init__(self, cart, **kwargs):
@@ -276,15 +289,11 @@ class ProductsScreen(MDScreen):
     def add_to_cart(self, product):
         self.cart.append(product)
         add_to_cart_db(product)
+
         snackbar = MDSnackbar(
-            MDSnackbarText(
-                text=f"{product['name']} added to cart"
-            )
+            MDSnackbarText(text=f"{product['name']} added to cart")
         )
         snackbar.open()
-
-        print(f"Added to cart: {product['name']}")
-        print(self.cart)
 
     def go_back(self, *args):
         self.manager.current = "home"
