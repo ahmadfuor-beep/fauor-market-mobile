@@ -18,7 +18,9 @@ class FauorApp(MDApp):
         insert_products(load_products())
         self.theme_cls.theme_style = "Light"
         self.theme_cls.primary_palette = "Brown"
-
+        # save the current user in the app instance for easy access across screens
+        self.current_user = None
+        
         cart = []
         # setting up the screen manager with all screens
         # using fade transition for smooth screen changes

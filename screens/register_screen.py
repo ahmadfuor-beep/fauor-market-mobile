@@ -4,7 +4,7 @@ from kivy.uix.scrollview import ScrollView
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.card import MDCard
 from kivymd.uix.label import MDLabel
-from kivymd.uix.textfield import MDTextField
+from kivymd.uix.textfield import MDTextField, MDTextFieldHintText
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDButton, MDButtonText
 
@@ -21,7 +21,7 @@ class RegisterScreen(MDScreen):
         root = MDBoxLayout(
             orientation="vertical",
             padding=dp(20),
-            spacing=dp(12)
+            spacing=dp(12),
         )
 
         scroll = ScrollView(size_hint=(1, 1))
@@ -30,7 +30,7 @@ class RegisterScreen(MDScreen):
             orientation="vertical",
             size_hint_y=None,
             spacing=dp(16),
-            padding=[0, dp(10), 0, dp(20)]
+            padding=[0, dp(10), 0, dp(20)],
         )
         content.bind(minimum_height=content.setter("height"))
 
@@ -42,12 +42,12 @@ class RegisterScreen(MDScreen):
             radius=[28, 28, 28, 28],
             style="filled",
             md_bg_color=APP_COLORS["surface"],
-            line_color=APP_COLORS["border"]
+            line_color=APP_COLORS["border"],
         )
         register_card.bind(minimum_height=register_card.setter("height"))
 
         title = MDLabel(
-            text="Register",
+            text="Create Your Account",
             halign="center",
             theme_text_color="Custom",
             text_color=APP_COLORS["text"],
@@ -55,90 +55,101 @@ class RegisterScreen(MDScreen):
             role="small",
             bold=True,
             size_hint=(1, None),
-            height=dp(40)
+            height=dp(40),
         )
 
         subtitle = MDLabel(
-            text="Create your account",
+            text="Fill in the required details below",
             halign="center",
             theme_text_color="Custom",
             text_color=APP_COLORS["muted"],
             font_style="Body",
             role="large",
             size_hint=(1, None),
-            height=dp(30)
+            height=dp(30),
+        )
+
+        info_label = MDLabel(
+            text="Required: first name, last name, city, phone, gender, username, password",
+            halign="center",
+            theme_text_color="Custom",
+            text_color=APP_COLORS["muted"],
+            font_style="Body",
+            role="small",
+            size_hint=(1, None),
+            height=dp(50),
         )
 
         self.first_name_input = MDTextField(
-            hint_text="First Name",
+            MDTextFieldHintText(text="First Name (required)"),
             mode="outlined",
             size_hint=(1, None),
-            height=dp(56)
+            height=dp(56),
         )
 
         self.last_name_input = MDTextField(
-            hint_text="Last Name",
+            MDTextFieldHintText(text="Last Name (required)"),
             mode="outlined",
             size_hint=(1, None),
-            height=dp(56)
+            height=dp(56),
         )
 
         self.city_input = MDTextField(
-            hint_text="City",
+            MDTextFieldHintText(text="City (required)"),
             mode="outlined",
             size_hint=(1, None),
-            height=dp(56)
+            height=dp(56),
         )
 
         self.home_location_input = MDTextField(
-            hint_text="Home Location (Optional)",
+            MDTextFieldHintText(text="Home Location (optional)"),
             mode="outlined",
             size_hint=(1, None),
-            height=dp(56)
+            height=dp(56),
         )
 
         self.phone_input = MDTextField(
-            hint_text="Phone Number",
+            MDTextFieldHintText(text="Phone Number (required)"),
             mode="outlined",
             size_hint=(1, None),
-            height=dp(56)
+            height=dp(56),
         )
 
         self.email_input = MDTextField(
-            hint_text="Email (Optional)",
+            MDTextFieldHintText(text="Email Address (optional)"),
             mode="outlined",
             size_hint=(1, None),
-            height=dp(56)
+            height=dp(56),
         )
 
         self.gender_input = MDTextField(
-            hint_text="Gender",
+            MDTextFieldHintText(text="Gender (required)"),
             mode="outlined",
             size_hint=(1, None),
-            height=dp(56)
+            height=dp(56),
         )
 
         self.username_input = MDTextField(
-            hint_text="Username",
+            MDTextFieldHintText(text="Username (required)"),
             mode="outlined",
             size_hint=(1, None),
-            height=dp(56)
+            height=dp(56),
         )
 
         self.password_input = MDTextField(
-            hint_text="Password",
+            MDTextFieldHintText(text="Password (required)"),
             mode="outlined",
             password=True,
             size_hint=(1, None),
-            height=dp(56)
+            height=dp(56),
         )
 
         self.confirm_input = MDTextField(
-            hint_text="Confirm Password",
+            MDTextFieldHintText(text="Confirm Password (required)"),
             mode="outlined",
             password=True,
             size_hint=(1, None),
-            height=dp(56)
+            height=dp(56),
         )
 
         register_button = MDButton(
@@ -148,7 +159,7 @@ class RegisterScreen(MDScreen):
             height=dp(48),
             radius=[22, 22, 22, 22],
             md_bg_color=APP_COLORS["accent"],
-            on_release=self.register_user
+            on_release=self.register_user,
         )
 
         login_button = MDButton(
@@ -158,7 +169,7 @@ class RegisterScreen(MDScreen):
             height=dp(48),
             radius=[22, 22, 22, 22],
             line_color=APP_COLORS["border"],
-            on_release=self.go_to_login
+            on_release=self.go_to_login,
         )
 
         self.message_label = MDLabel(
@@ -169,11 +180,12 @@ class RegisterScreen(MDScreen):
             font_style="Body",
             role="medium",
             size_hint=(1, None),
-            height=dp(40)
+            height=dp(40),
         )
 
         register_card.add_widget(title)
         register_card.add_widget(subtitle)
+        register_card.add_widget(info_label)
         register_card.add_widget(self.first_name_input)
         register_card.add_widget(self.last_name_input)
         register_card.add_widget(self.city_input)
@@ -223,7 +235,7 @@ class RegisterScreen(MDScreen):
             email,
             gender,
             username,
-            password
+            password,
         )
 
         if success:

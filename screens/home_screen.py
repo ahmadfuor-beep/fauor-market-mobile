@@ -8,7 +8,7 @@ from kivymd.uix.button import MDButton, MDButtonText
 from ui.theme import APP_COLORS
 from kivymd.app import MDApp
 from kivy.metrics import dp
-
+from kivymd.app import MDApp
 
 class HomeScreen(MDScreen):
     def __init__(self, **kwargs):
@@ -64,13 +64,16 @@ class HomeScreen(MDScreen):
             bold=True
         )
 
-        subtitle_label = MDLabel(
-            text="Welcome to our supermarket app",
+        self.welcome_label = MDLabel(
+            text="",
             halign="center",
             theme_text_color="Custom",
-            text_color=APP_COLORS["muted"],
-            font_style="Body",
-            role="large"
+            text_color=APP_COLORS["text"],
+            font_style="Headline",
+            role="medium",
+            bold=True,
+            size_hint=(1, None),
+            height=dp(50)
         )
 
         menu_card = MDCard(
@@ -117,7 +120,7 @@ class HomeScreen(MDScreen):
 
         root.add_widget(top_row)
         root.add_widget(title_label)
-        root.add_widget(subtitle_label)
+        root.add_widget(self.welcome_label)
         root.add_widget(menu_card)
 
         self.add_widget(root)
@@ -130,6 +133,15 @@ class HomeScreen(MDScreen):
         elif 12 <= current_hour < 18:
             return "Good Afternoon"
         return "Good Evening"
+    
+    def on_enter(self):
+        app = MDApp.get_running_app()
+
+        if app.current_user:
+            name = app.current_user["first_name"]
+            self.welcome_label.text = f"Welcome {name} 👋"
+        else:
+            self.welcome_label.text = "Welcome 👋"
 
     def go_to_products(self, *args):
         self.manager.current = "products"

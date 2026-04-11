@@ -161,3 +161,23 @@ def validate_user(username, password):
     conn.close()
 
     return user is not None
+
+# Fun to return user details
+def get_user(username):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT first_name, last_name FROM users
+    WHERE username = ?
+    """, (username,))
+
+    user = cursor.fetchone()
+    conn.close()
+
+    if user:
+        return {
+            "first_name": user[0],
+            "last_name": user[1]
+        }
+    return None

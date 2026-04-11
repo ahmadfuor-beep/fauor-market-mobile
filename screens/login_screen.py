@@ -6,7 +6,8 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDButton, MDButtonText
 from ui.theme import APP_COLORS
 from kivy.metrics import dp
-from services.db_service import validate_user
+from services.db_service import validate_user, get_user
+from kivymd.app import MDApp
 
 class LoginScreen(MDScreen):
     def __init__(self, **kwargs):
@@ -115,7 +116,9 @@ class LoginScreen(MDScreen):
         password = self.password_input.text.strip()
 
         if validate_user(username, password):
-            self.message_label.text = "Login successful"
+            app = MDApp.get_running_app()
+            app.current_user = get_user(username)
+
             self.manager.current = "home"
         else:
             self.message_label.text = "Invalid username or password"
