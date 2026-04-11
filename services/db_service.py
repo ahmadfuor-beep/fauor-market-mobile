@@ -29,6 +29,21 @@ def create_tables():
         price REAL
     )
     """)
+    
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        first_name TEXT NOT NULL,
+        last_name TEXT NOT NULL,
+        city TEXT NOT NULL,
+        home_location TEXT,
+        phone TEXT NOT NULL,
+        email TEXT,
+        gender TEXT NOT NULL,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+    )
+    """)
 
     conn.commit()
     conn.close()
@@ -109,3 +124,34 @@ def clear_cart_db():
 
     conn.commit()
     conn.close()
+    
+def create_user(username, password):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+        INSERT INTO users (username, password)
+        VALUES (?, ?)
+        """, (username, password))
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+    finally:
+        conn.close()
+
+
+def validate_user(username, password):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT * FROM users
+    WHERE username = ? AND password = ?
+    """, (username, password))
+
+    user = cursor.fetchone()
+    conn.close()
+
+    return user is not None

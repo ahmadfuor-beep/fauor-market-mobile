@@ -10,6 +10,8 @@ from ui.theme import APP_COLORS
 from screens.checkout_screen import CheckoutScreen
 from services.db_service import create_tables, insert_products
 from services.data_service import load_products
+from screens.register_screen import RegisterScreen
+
 class FauorApp(MDApp):
     def build(self):
         create_tables()
@@ -22,6 +24,7 @@ class FauorApp(MDApp):
         # using fade transition for smooth screen changes
         sm = ScreenManager(transition=FadeTransition(duration=0.3))
         
+        sm.add_widget(RegisterScreen(name="register"))
         sm.add_widget(SplashScreen(name="splash"))
         sm.add_widget(LoginScreen(name="login"))
         sm.add_widget(HomeScreen(name="home"))

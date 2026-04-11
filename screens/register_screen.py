@@ -1,14 +1,17 @@
+from kivy.metrics import dp
+
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.card import MDCard
 from kivymd.uix.label import MDLabel
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDButton, MDButtonText
-from ui.theme import APP_COLORS
-from kivy.metrics import dp
-from services.db_service import validate_user
 
-class LoginScreen(MDScreen):
+from ui.theme import APP_COLORS
+from services.db_service import create_user
+
+
+class RegisterScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -22,10 +25,10 @@ class LoginScreen(MDScreen):
 
         root.add_widget(MDBoxLayout())
 
-        login_card = MDCard(
+        register_card = MDCard(
             orientation="vertical",
             size_hint=(1, None),
-            height=dp(420),
+            height=dp(470),
             padding=dp(22),
             spacing=dp(18),
             radius=[28, 28, 28, 28],
@@ -35,7 +38,7 @@ class LoginScreen(MDScreen):
         )
 
         title = MDLabel(
-            text="Login",
+            text="Register",
             halign="center",
             theme_text_color="Custom",
             text_color=APP_COLORS["text"],
@@ -45,7 +48,7 @@ class LoginScreen(MDScreen):
         )
 
         subtitle = MDLabel(
-            text="Enter your account details",
+            text="Create your account",
             halign="center",
             theme_text_color="Custom",
             text_color=APP_COLORS["muted"],
@@ -68,25 +71,34 @@ class LoginScreen(MDScreen):
             height=dp(56)
         )
 
-        login_button = MDButton(
-            MDButtonText(text="Login"),
+        self.confirm_input = MDTextField(
+            hint_text="Confirm Password",
+            mode="outlined",
+            password=True,
+            size_hint=(1, None),
+            height=dp(56)
+        )
+
+        register_button = MDButton(
+            MDButtonText(text="Create Account"),
             style="filled",
             size_hint=(1, None),
             height=dp(48),
             radius=[22, 22, 22, 22],
             md_bg_color=APP_COLORS["accent"],
-            on_release=self.check_login
+            on_release=self.register_user
         )
-        
-        register_button = MDButton(
-            MDButtonText(text="Create New Account"),
+
+        login_button = MDButton(
+            MDButtonText(text="Back to Login"),
             style="outlined",
             size_hint=(1, None),
             height=dp(48),
             radius=[22, 22, 22, 22],
             line_color=APP_COLORS["border"],
-            on_release=self.go_to_register
+            on_release=self.go_to_login
         )
+       
 
         self.message_label = MDLabel(
             text="",
@@ -97,28 +109,39 @@ class LoginScreen(MDScreen):
             role="medium"
         )
 
-        login_card.add_widget(title)
-        login_card.add_widget(subtitle)
-        login_card.add_widget(self.username_input)
-        login_card.add_widget(self.password_input)
-        login_card.add_widget(login_button)
-        login_card.add_widget(self.message_label)
-        login_card.add_widget(register_button)
-
-        root.add_widget(login_card)
+        register_card.add_widget(title)
+        register_card.add_widget(subtitle)
+        register_card.add_widget(self.username_input)
+        register_card.add_widget(self.password_input)
+        register_card.add_widget(self.confirm_input)
+        register_card.add_widget(register_button)
+        register_card.add_widget(login_button)
+        register_card.add_widget(self.message_label)
+        
+        root.add_widget(register_card)
         root.add_widget(MDBoxLayout())
 
         self.add_widget(root)
 
-    def check_login(self, *args):
+    def register_user(self, *args):
         username = self.username_input.text.strip()
         password = self.password_input.text.strip()
+        confirm = self.confirm_input.text.strip()
 
-        if validate_user(username, password):
-            self.message_label.text = "Login successful"
-            self.manager.current = "home"
+        if not username or not password:
+            self.message_label.text = "Please fill all fields"
+            return
+
+        if password != confirm:
+            self.message_label.text = "Passwords do not match"
+            return
+
+        success = create_user(username, password)
+
+        if success:
+            self.message_label.text = "Account created successfully"
         else:
-            self.message_label.text = "Invalid username or password"
+            self.message_label.text = "Username already exists"
 
-    def go_to_register(self, *args):
-        self.manager.current = "register"
+    def go_to_login(self, *args):
+        self.manager.current = "login"

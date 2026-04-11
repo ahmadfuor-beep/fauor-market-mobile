@@ -14,7 +14,7 @@ from kivymd.uix.appbar import (
 from kivymd.uix.snackbar import MDSnackbar, MDSnackbarText
 
 from ui.theme import APP_COLORS
-
+from services.db_service import clear_cart_db, get_cart_db
 
 class CheckoutScreen(MDScreen):
     def __init__(self, cart, **kwargs):
@@ -96,7 +96,9 @@ class CheckoutScreen(MDScreen):
             height=dp(40)
         )
         content.add_widget(self.total_label)
-
+        # store the original button color for later use in animation
+        self.original_button_color = APP_COLORS["accent"]
+        
         self.confirm_button = MDButton(
             MDButtonText(text="Confirm Order"),
             style="filled",
@@ -104,6 +106,7 @@ class CheckoutScreen(MDScreen):
             height=dp(48),
             radius=[22, 22, 22, 22],
             md_bg_color=APP_COLORS["accent"],
+            theme_bg_color="Custom",
             on_release=self.confirm_order
         )
 
@@ -129,7 +132,8 @@ class CheckoutScreen(MDScreen):
         self.summary_card.clear_widgets()
 
         total = 0
-
+        self.cart = get_cart_db()
+        
         if not self.cart:
             self.summary_card.add_widget(
                 MDLabel(
@@ -167,22 +171,31 @@ class CheckoutScreen(MDScreen):
             )
             snackbar.open()
             return
-
-        self.cart.clear()
-        self.update_summary()
         # change the confirm button to green after successful order
-        self.confirm_button.md_bg_color = (0.2, 0.7, 0.3, 1)
+        self.confirm_button.theme_bg_color = "Custom"
+        self.confirm_button.md_bg_color = [0.2, 0.7, 0.3, 1]
+        # animate the button back to original color after a short delay
+        Animation(
+            md_bg_color=self.original_button_color,
+            duration=0.6
+        ).start(self.confirm_button)
+        # The card will disappear after confrimation
+        anim = Animation(opacity=0, duration=0.35)
+        anim.bind(on_complete=self.finish_order_animation)
+        anim.start(self.summary_card)
         
+    def finish_order_animation(self, *args):
+        clear_cart_db()
+        self.cart.clear()
+
+        self.summary_card.opacity = 1
+        self.update_summary()
+
         snackbar = MDSnackbar(
-            MDSnackbarText(text="Order confirmed successfully"),
-            y=dp(24),
-            pos_hint={"center_x": 0.5},
-            size_hint_x=0.75
+            MDSnackbarText(text="Order confirmed successfully")
         )
         snackbar.open()
-        # The card will disappear after confrimation
-        anim = Animation(opacity=0, duration=0.3)
-        anim.start(self.summary_card)
+        
         
         
         
