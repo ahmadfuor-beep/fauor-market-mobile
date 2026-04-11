@@ -125,15 +125,21 @@ def clear_cart_db():
     conn.commit()
     conn.close()
     
-def create_user(username, password):
+def create_user(first_name, last_name, city, home_location, phone, email, gender, username, password):
     conn = get_connection()
     cursor = conn.cursor()
 
     try:
         cursor.execute("""
-        INSERT INTO users (username, password)
-        VALUES (?, ?)
-        """, (username, password))
+        INSERT INTO users (
+            first_name, last_name, city, home_location,
+            phone, email, gender, username, password
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            first_name, last_name, city, home_location,
+            phone, email, gender, username, password
+        ))
         conn.commit()
         return True
     except sqlite3.IntegrityError:
