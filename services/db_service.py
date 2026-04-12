@@ -168,7 +168,8 @@ def get_user(username):
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT first_name, last_name FROM users
+    SELECT first_name, last_name, city, home_location, phone, email, gender, username
+    FROM users
     WHERE username = ?
     """, (username,))
 
@@ -178,6 +179,12 @@ def get_user(username):
     if user:
         return {
             "first_name": user[0],
-            "last_name": user[1]
+            "last_name": user[1],
+            "city": user[2],
+            "home_location": user[3],
+            "phone": user[4],
+            "email": user[5],
+            "gender": user[6],
+            "username": user[7],
         }
     return None
