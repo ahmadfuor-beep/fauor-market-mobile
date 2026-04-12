@@ -187,7 +187,22 @@ class ProfileScreen(MDScreen):
             on_release=self.go_back
         )
 
+        
+        edit_button = MDButton(
+            MDButtonText(text="Edit Profile"),
+            style="outlined",
+            size_hint=(1, None),
+            height=dp(48),
+            radius=[22, 22, 22, 22],
+            line_color=APP_COLORS["border"],
+            on_release=self.go_to_edit_profile
+        )
+        
+        self.profile_card.add_widget(edit_button)
         self.profile_card.add_widget(back_button)
-
+        
     def go_back(self, *args):
         self.manager.current = "home"
+        
+    def go_to_edit_profile(self, *args):
+        self.manager.current = "edit_profile"

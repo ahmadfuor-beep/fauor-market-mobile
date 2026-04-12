@@ -12,6 +12,7 @@ from services.db_service import create_tables, insert_products
 from services.data_service import load_products
 from screens.register_screen import RegisterScreen
 from screens.profile_screen import ProfileScreen
+from screens.edit_profile_screen import EditProfileScreen
 
 class FauorApp(MDApp):
     def build(self):
@@ -32,6 +33,7 @@ class FauorApp(MDApp):
         sm.add_widget(LoginScreen(name="login"))
         sm.add_widget(HomeScreen(name="home"))
         sm.add_widget(ProfileScreen(name="profile"))
+        sm.add_widget(EditProfileScreen(name="edit_profile"))
         sm.add_widget(ProductsScreen(cart=cart, name="products"))
         sm.add_widget(CartScreen(cart=cart, name="cart"))
         sm.add_widget(CheckoutScreen(cart=cart, name="checkout"))

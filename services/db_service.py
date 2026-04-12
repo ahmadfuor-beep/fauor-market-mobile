@@ -188,3 +188,21 @@ def get_user(username):
             "username": user[7],
         }
     return None
+
+# Fun to update user details
+def update_user(username, first_name, last_name, city, home_location, phone, email, gender):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    UPDATE users
+    SET first_name = ?, last_name = ?, city = ?, home_location = ?,
+        phone = ?, email = ?, gender = ?
+    WHERE username = ?
+    """, (
+        first_name, last_name, city, home_location,
+        phone, email, gender, username
+    ))
+
+    conn.commit()
+    conn.close()
