@@ -15,6 +15,7 @@ from screens.profile_screen import ProfileScreen
 from screens.edit_profile_screen import EditProfileScreen
 from services.session_service import load_session
 from services.db_service import get_user
+from screens.order_history_screen import OrderHistoryScreen
 
 class FauorApp(MDApp):
     def build(self):
@@ -39,6 +40,7 @@ class FauorApp(MDApp):
         sm.add_widget(ProductsScreen(cart=cart, name="products"))
         sm.add_widget(CartScreen(cart=cart, name="cart"))
         sm.add_widget(CheckoutScreen(cart=cart, name="checkout"))
+        sm.add_widget(OrderHistoryScreen(name="order_history"))
         
         saved_user = load_session()
 

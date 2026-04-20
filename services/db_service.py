@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from datetime import datetime
 
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "fauor.db")
 
@@ -42,6 +43,25 @@ def create_tables():
         gender TEXT NOT NULL,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL
+    )
+    """)
+    
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS orders (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL,
+        total REAL NOT NULL,
+        created_at TEXT NOT NULL
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS order_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        order_id INTEGER NOT NULL,
+        product_name TEXT NOT NULL,
+        price REAL NOT NULL,
+        FOREIGN KEY(order_id) REFERENCES orders(id)
     )
     """)
 
@@ -206,3 +226,63 @@ def update_user(username, first_name, last_name, city, home_location, phone, ema
 
     conn.commit()
     conn.close()
+    
+def create_order(username, cart_items):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    total = sum(item["price"] for item in cart_items)
+    created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    cursor.execute("""
+    INSERT INTO orders (username, total, created_at)
+    VALUES (?, ?, ?)
+    """, (username, total, created_at))
+
+    order_id = cursor.lastrowid
+
+    for item in cart_items:
+        cursor.execute("""
+        INSERT INTO order_items (order_id, product_name, price)
+        VALUES (?, ?, ?)
+        """, (order_id, item["name"], item["price"]))
+
+    conn.commit()
+    conn.close()
+    
+def get_orders_by_username(username):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT id, total, created_at
+    FROM orders
+    WHERE username = ?
+    ORDER BY id DESC
+    """, (username,))
+
+    orders = cursor.fetchall()
+    conn.close()
+
+    return [
+        {"id": row[0], "total": row[1], "created_at": row[2]}
+        for row in orders
+    ]
+    
+def get_order_items(order_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT product_name, price
+    FROM order_items
+    WHERE order_id = ?
+    """, (order_id,))
+
+    items = cursor.fetchall()
+    conn.close()
+
+    return [
+        {"name": row[0], "price": row[1]}
+        for row in items
+    ]

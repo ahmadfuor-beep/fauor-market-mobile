@@ -192,11 +192,22 @@ class HomeScreen(MDScreen):
             line_color=APP_COLORS["border"],
             on_release=self.logout
         )
+        
+        history_button = MDButton(
+            MDButtonText(text="Order History"),
+            style="outlined",
+            size_hint=(1, None),
+            height=dp(48),
+            radius=[22, 22, 22, 22],
+            line_color=APP_COLORS["border"],
+            on_release=self.go_to_order_history
+        )
 
         menu_card.add_widget(products_button)
         menu_card.add_widget(cart_button)
         menu_card.add_widget(exit_button)
         menu_card.add_widget(profile_button)
+        menu_card.add_widget(history_button)
         menu_card.add_widget(logout_button)
         
         root.add_widget(top_row)
@@ -272,3 +283,6 @@ class HomeScreen(MDScreen):
         clear_session()
 
         self.manager.current = "login"
+        
+    def go_to_order_history(self, *args):
+        self.manager.current = "order_history"

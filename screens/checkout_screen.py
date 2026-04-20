@@ -14,7 +14,7 @@ from kivymd.uix.appbar import (
 from kivymd.uix.snackbar import MDSnackbar, MDSnackbarText
 
 from ui.theme import APP_COLORS
-from services.db_service import clear_cart_db, get_cart_db
+from services.db_service import clear_cart_db, get_cart_db, create_order
 
 class CheckoutScreen(MDScreen):
     def __init__(self, cart, **kwargs):
@@ -164,25 +164,27 @@ class CheckoutScreen(MDScreen):
     def confirm_order(self, *args):
         if not self.cart:
             snackbar = MDSnackbar(
-                MDSnackbarText(text="Your cart is empty"),
-                y=dp(24),
-                pos_hint={"center_x": 0.5},
-                size_hint_x=0.75
+                MDSnackbarText(text="Your cart is empty")
             )
             snackbar.open()
             return
-        # change the confirm button to green after successful order
+
+        app = MDApp.get_running_app()
+
         self.confirm_button.theme_bg_color = "Custom"
         self.confirm_button.md_bg_color = [0.2, 0.7, 0.3, 1]
-        # animate the button back to original color after a short delay
+
+        if app.current_user:
+            create_order(app.current_user["username"], self.cart)
+
+        anim = Animation(opacity=0, duration=0.35)
+        anim.bind(on_complete=self.finish_order_animation)
+        anim.start(self.summary_card)
+
         Animation(
             md_bg_color=self.original_button_color,
             duration=0.6
         ).start(self.confirm_button)
-        # The card will disappear after confrimation
-        anim = Animation(opacity=0, duration=0.35)
-        anim.bind(on_complete=self.finish_order_animation)
-        anim.start(self.summary_card)
         
     def finish_order_animation(self, *args):
         clear_cart_db()
