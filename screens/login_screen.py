@@ -8,6 +8,7 @@ from ui.theme import APP_COLORS
 from kivy.metrics import dp
 from services.db_service import validate_user, get_user
 from kivymd.app import MDApp
+from services.session_service import save_session
 
 class LoginScreen(MDScreen):
     def __init__(self, **kwargs):
@@ -118,7 +119,8 @@ class LoginScreen(MDScreen):
         if validate_user(username, password):
             app = MDApp.get_running_app()
             app.current_user = get_user(username)
-
+            # save the session so we can auto-login next time
+            save_session(username)
             self.manager.current = "home"
         else:
             self.message_label.text = "Invalid username or password"

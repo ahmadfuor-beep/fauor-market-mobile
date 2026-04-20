@@ -10,6 +10,7 @@ from kivymd.app import MDApp
 from kivy.metrics import dp
 from kivy.animation import Animation
 from kivymd.uix.label import MDLabel, MDIcon
+from services.session_service import clear_session
 
 class HomeScreen(MDScreen):
     def __init__(self, **kwargs):
@@ -181,11 +182,22 @@ class HomeScreen(MDScreen):
             height=dp(42),
             on_release=self.close_app
         )
+        
+        logout_button = MDButton(
+            MDButtonText(text="Logout"),
+            style="outlined",
+            size_hint=(1, None),
+            height=dp(48),
+            radius=[22, 22, 22, 22],
+            line_color=APP_COLORS["border"],
+            on_release=self.logout
+        )
 
         menu_card.add_widget(products_button)
         menu_card.add_widget(cart_button)
         menu_card.add_widget(exit_button)
         menu_card.add_widget(profile_button)
+        menu_card.add_widget(logout_button)
         
         root.add_widget(top_row)
         root.add_widget(title_label)
@@ -252,3 +264,11 @@ class HomeScreen(MDScreen):
 
     def close_app(self, *args):
         MDApp.get_running_app().stop()
+        
+    def logout(self, *args):
+        app = MDApp.get_running_app()
+
+        app.current_user = None
+        clear_session()
+
+        self.manager.current = "login"

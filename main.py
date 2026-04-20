@@ -13,6 +13,8 @@ from services.data_service import load_products
 from screens.register_screen import RegisterScreen
 from screens.profile_screen import ProfileScreen
 from screens.edit_profile_screen import EditProfileScreen
+from services.session_service import load_session
+from services.db_service import get_user
 
 class FauorApp(MDApp):
     def build(self):
@@ -37,7 +39,15 @@ class FauorApp(MDApp):
         sm.add_widget(ProductsScreen(cart=cart, name="products"))
         sm.add_widget(CartScreen(cart=cart, name="cart"))
         sm.add_widget(CheckoutScreen(cart=cart, name="checkout"))
-        sm.current = "splash"
+        
+        saved_user = load_session()
+
+        if saved_user:
+            self.current_user = get_user(saved_user)
+            sm.current = "home"
+        else:
+            sm.current = "splash"
+            
         return sm
 
 
